@@ -62,15 +62,15 @@
     z-index: 2;
   }
   .glass-effect h2 {
-    color: var(--secondary-color);
+    color: var(--primary-color);
   }
-  /* фон и рамки превратить в светлые карточки */
+  /* фон и рамки ближе к дизайну epicpathfinder.ru */
   .glass-effect {
-    background: #ffffff;                   /* чисто белый фон */
-    border: 1px solid #e5e7eb;             /* light gray border */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    /* убираем “стекло” — на светлом фоне оно избыточно */
-    backdrop-filter: none;
+    background: #ffffff;                   /* белый фон карточки */
+    border: 1px solid #e5e7eb;             /* светлая рамка */
+    border-top: 4px solid var(--primary-color); /* акцент сверху */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);  /* как shadow-custom */
+    backdrop-filter: none;                  /* без стеклянного эффекта */
   }
 
   /* чтобы “text-white” не оставался белым на светлом фоне */
