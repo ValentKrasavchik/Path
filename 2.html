@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Анкета игрока - Epic Pathfinder Wiki</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+  :root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --accent-color: #f093fb;
+    --success-color: #4ade80;
+    --warning-color: #fbbf24;
+    --danger-color: #ef4444;
+  }
+
+  /* ======= Header & Footer ======= */
+  .hero-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+  }
+  .hero-section h1,
+  .hero-section h2,
+  .hero-section h3,
+  .hero-section p,
+  .hero-section span {
+    color: white;
+  }
+  .hero-section ul li,
+  .hero-section a,
+  .hero-section button {
+    color: rgba(255,255,255,0.8);
+  }
+  .hero-section a:hover,
+  .hero-section button:hover {
+    color: white;
+  }
+  /* тонкая белая граница подвала */
+  .hero-section .border-t {
+    border-color: rgba(255,255,255,0.2) !important;
+  }
+
+  /* ================================ */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f9fafb; /* как в 1.html: bg-gray-50 */
+  }
+  /* Удалить или закомментировать body::before (шумовой фон) и убрать min-height/position */
+
+  .main-container {
+    position: relative;
+    z-index: 2;
+  }
+  .glass-effect h2 {
+    color: var(--secondary-color);
+  }
+  /* фон и рамки превратить в светлые карточки */
+  .glass-effect {
+    background: #ffffff;                   /* чисто белый фон */
+    border: 1px solid #e5e7eb;             /* light gray border */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    /* убираем “стекло” — на светлом фоне оно избыточно */
+    backdrop-filter: none;
+  }
+
+  /* чтобы “text-white” не оставался белым на светлом фоне */
+  .text-white {
+    color: #374151 !important;            /* тёмно-серый вместо белого */
+  }
+  .opacity-90 { opacity: .9 !important; }   /* можно оставить как есть */
+
+  .card-hover {
+    transition: all 0.3s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(118, 75, 162, 0.15);
+  }
+
+  /* Базовый стиль для кружков шагов */
+  .step-indicator {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    background: #f5f3ff;            /* очень светлый лавандовый фон */
+    border: 2px solid #d8b4fe;      /* мягкий фиолетовый бордер */
+    color: #7c3aed;                 /* насыщенный фиолетовый текст */
+    transition: all 0.3s ease;
+  }
+  .step-indicator.active {
+    background: #7c3aed;
+    border: 2px solid #c4b5fd;
+    color: #ffffff;
+    transform: none;
+  }
+  .step-indicator.completed {
+    background: #8b5cf6;
+    border: none;
+    color: #ffffff;
+  }
+  .step-indicator.inactive {
+    background: #f5f3ff;
+    border: 2px solid #d8b4fe;
+    color: #a78bfa;
+  }
+
+  .progress-line {
+    height: 2px;
+    flex: 1;
+    margin: 0 10px;
+    position: relative;
+    background: #ede9fe;
+    border-radius: 1px;
+    overflow: hidden;
+  }
+  .progress-line::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; height: 100%;
+    width: var(--progress-width, 0%);
+    background: linear-gradient(90deg, #7c3aed, #c084fc);
+    transition: width 0.5s ease;
+  }
+
+  .slider-container {
+    position: relative;
+    margin: 20px 0;
+  }
+  .age-slider {
+    width: 100%; height: 8px;
+    border-radius: 4px;
+    background: #e5e7eb;
+    border: 1px solid #d1d5db;
+    outline: none;
+    appearance: none;
+  }
+  /* плоский фиолетовый ползунок */
+  .age-slider::-webkit-slider-thumb,
+  .time-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--secondary-color);
+    cursor: pointer;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+  .age-slider::-moz-range-thumb,
+  .time-slider::-moz-range-thumb {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--secondary-color);
+    cursor: pointer; border: none;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+
+  .age-display {
+    position: absolute; top: -40px; left: 50%;
+    transform: translateX(-50%);
+    background: white; color: var(--primary-color);
+    padding: 5px 12px; border-radius: 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .contact-option {
+    padding: 15px;
+    border: 1px solid rgba(118,75,162,0.3);
+    border-radius: 12px;
+    background: #ffffff;
+    color: #374151;
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; transition: all 0.3s ease;
+  }
+  .contact-option span { color: #374151 !important; }
+  .contact-option:hover {
+    background: rgba(118,75,162,0.05);
+    border-color: var(--secondary-color);
+  }
+  .contact-option.selected {
+    border-color: var(--secondary-color);
+    background: rgba(118,75,162,0.15);
+  }
+
+  .contact-input {
+    margin-top: 15px; padding: 12px;
+    border: 1px solid rgba(118,75,162,0.4);
+    border-radius: 8px; background: #ffffff;
+    color: #374151; width: 100%;
+    transition: all 0.3s ease;
+  }
+  .contact-input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+    box-shadow: 0 0 0 3px rgba(118,75,162,0.15);
+    background: #f3f4f6;
+  }
+  .contact-input::placeholder { color: #6b7280; }
+
+  .time-slider {
+    width: 100%; height: 8px;
+    border-radius: 4px; background: #e5e7eb;
+    border: 1px solid #d1d5db; outline: none;
+    appearance: none;
+  }
+  /* плоский оранжевый ползунок */
+  .time-slider::-webkit-slider-thumb {
+    appearance: none; width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--warning-color);
+    cursor: pointer;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+  .time-slider::-moz-range-thumb {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--warning-color); cursor: pointer;
+    border: none;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+
+  .choice-card {
+    padding: 20px; border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 12px; background: rgba(255,255,255,0.1);
+    cursor: pointer; transition: all 0.3s ease;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .choice-card::before {
+    content: '';
+    position: absolute; top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(135deg,var(--primary-color),var(--secondary-color));
+    opacity: 0; transition: opacity 0.3s ease;
+  }
+  .choice-card:hover::before { opacity: 0.1; }
+  .choice-card.selected::before { opacity: 0.2; }
+  .choice-card.selected {
+    border-color: var(--success-color);
+    transform: scale(1.02);
+  }
+
+  .warning-section {
+    background: linear-gradient(135deg,rgba(251,191,36,0.1),rgba(245,158,11,0.1));
+    border: 2px solid rgba(251,191,36,0.3);
+    border-radius:16px; padding:25px; margin:20px 0;
+  }
+  .danger-section {
+    background: linear-gradient(135deg,rgba(239,68,68,0.1),rgba(220,38,38,0.1));
+    border: 2px solid rgba(239,68,68,0.3);
+    border-radius:16px; padding:25px; margin:20px 0;
+  }
+  .story-section {
+    background: linear-gradient(135deg,rgba(167,139,250,0.1),rgba(139,92,246,0.1));
+    border: 2px solid rgba(167,139,250,0.3);
+    border-radius:16px; padding:30px; margin:30px 0;
+  }
+  .example-card {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius:12px; padding:20px; margin:15px 0;
+  }
+
+  .btn {
+    padding:12px 24px; border:none; border-radius:8px;
+    font-weight:600; cursor:pointer; transition: all 0.3s ease;
+    display:inline-flex; align-items:center; gap:8px;
+    text-decoration:none;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg,var(--primary-color),var(--secondary-color));
+    color:white;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102,126,234,0.4);
+  }
+  .btn-secondary {
+    background: rgba(255,255,255,0.2);
+    color:white;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.3);
+  }
+  .btn-success {
+    background: linear-gradient(135deg,var(--success-color),#22c55e);
+    color:white;
+  }
+  .btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(74,222,128,0.4);
+  }
+
+  .fade-in { animation: fadeIn 0.5s ease-in-out; }
+  .slide-in { animation: slideIn 0.5s ease-out; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes slideIn {
+    from { transform: translateX(30px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .pulse {
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .textarea-custom {
+    width:100%; min-height:200px; padding:15px;
+    border:2px solid rgba(255,255,255,0.3);
+    border-radius:12px; background: rgba(255,255,255,0.1);
+    color:white; font-family:'Inter',sans-serif;
+    resize: vertical; transition: all 0.3s ease;
+  }
+  .textarea-custom:focus {
+    outline:none; border-color: var(--primary-color);
+    background: rgba(255,255,255,0.15);
+  }
+  .textarea-custom::placeholder {
+    color: rgba(255,255,255,0.7);
+  }
+
+  .nav-link {
+    padding:8px 16px; border-radius:8px;
+    background: rgba(255,255,255,0.1);
+    color:white; text-decoration:none;
+    transition: all 0.3s ease;
+    display:flex; align-items:center; gap:8px;
+  }
+  .nav-link:hover {
+    background: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+  }
+
+  .stats-card {
+    background: rgba(255,255,255,0.1);
+    border:1px solid rgba(255,255,255,0.2);
+    border-radius:12px; padding:20px; text-align:center;
+    backdrop-filter: blur(10px);
+  }
+
+  .floating-particles {
+    position: fixed; top:0; left:0;
+    width:100%; height:100%;
+    pointer-events:none; z-index:1;
+  }
+  .particle {
+    position:absolute;
+    background: rgba(255,255,255,0.1);
+    border-radius:50%;
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+  }
+
+  .image-placeholder {
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+    border:2px dashed rgba(255,255,255,0.3);
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    color: rgba(255,255,255,0.7);
+    font-size:14px; text-align:center; padding:20px;
+  }
+
+  .step-content {
+    display: none;
+  }
+  .step-content.active {
+    display: block;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+  /* после всех остальных правил */
+.hero-section i,
+.hero-section .fas,
+.hero-section .far,
+.hero-section .fal,
+.hero-section .fab {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+</style>
+
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+    
+    <div class="main-container">
+        <!-- Header -->
+<header class="hero-section text-white py-8">
+  <div class="container mx-auto px-4 text-center">
+    <div class="flex justify-center mb-4">
+      <i class="fas fa-star-of-david text-6xl"></i>
+    </div>
+    <h1 class="text-4xl font-bold mb-2">Epic Pathfinder Wiki</h1>
+    <p class="text-lg opacity-90 mb-6">Добро пожаловать в мир приключений!</p>
+    <p class="text-sm opacity-80 mb-6">Полное руководство по кампании Pathfinder 2e</p>
+
+    <!-- Stats -->
+    <div class="flex justify-center space-x-8 mb-6">
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-users"></i>
+        <span>Активных игроков: <strong>6</strong></span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-calendar"></i>
+        <span>Сессий проведено: <strong>394</strong></span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-clock"></i>
+        <span>Время в игре: <strong>2364</strong> часов</span>
+      </div>
+    </div>
+
+    <div class="flex justify-center space-x-4">
+      <button class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all">
+        <i class="fas fa-play mr-2"></i>Начать изучение
+      </button>
+      <button class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg transition-all">
+        <i class="fas fa-user-plus mr-2"></i>Присоединиться к игре
+      </button>
+    </div>
+  </div>
+</header>
+
+        <!-- Main Content -->
+        <main class="max-w-4xl mx-auto px-6 py-8">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-5xl font-bold text-white mb-4">
+                    <i class="fas fa-user-plus mr-3 text-yellow-300"></i>
+                    Поиск игроков в команду
+                </h1>
+                <p class="text-2xl text-white opacity-90 mb-6">Присоединяйтесь к нашей кампании Pathfinder 2e</p>
+                
+                <!-- Progress Indicator -->
+                <div class="flex items-center justify-center mb-8 px-4">
+                    <div class="step-indicator active" id="step-indicator-1">1</div>
+                    <div class="progress-line" id="progress-1"></div>
+                    <div class="step-indicator inactive" id="step-indicator-2">2</div>
+                    <div class="progress-line" id="progress-2"></div>
+                    <div class="step-indicator inactive" id="step-indicator-3">3</div>
+                    <div class="progress-line" id="progress-3"></div>
+                    <div class="step-indicator inactive" id="step-indicator-4">4</div>
+                    <div class="progress-line" id="progress-4"></div>
+                    <div class="step-indicator inactive" id="step-indicator-5">5</div>
+                    <div class="progress-line" id="progress-5"></div>
+                    <div class="step-indicator inactive" id="step-indicator-6">6</div>
+                </div>
+                <p class="text-white opacity-75 text-lg" id="step-title">Шаг 1 из 6: Основная информация</p>
+            </div>
+
+            <!-- Form Container -->
+            <div class="glass-effect rounded-2xl p-8 card-hover">
+                <form id="application-form">
+                    
+                    <!-- Step 1: Основная информация -->
+                    <div class="step-content active" id="step-1">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-white mb-4">
+                                <i class="fas fa-user mr-3 text-blue-300"></i>
+                                Основная информация
+                            </h2>
+                            <p class="text-white opacity-80 text-lg">Расскажите немного о себе</p>
+                        </div>
+
+                        <div class="space-y-8">
+                            <!-- Имя -->
+                            <div>
+                                <label class="block text-white font-semibold mb-3 text-lg">
+                                    Имя <span class="text-red-400">*</span>
+                                </label>
+                                <input type="text" id="name" name="name" required
+                                       class="contact-input text-lg"
+                                       placeholder="Как к вам обращаться?">
+                            </div>
+
+                            <!-- Возраст с слайдером -->
+                            <div>
+                                <label class="block text-white font-semibold mb-4 text-lg">
+                                    Возраст <span class="text-red-400">*</span>
+                                </label>
+                                <div class="slider-container">
+                                    <div class="age-display" id="age-display">18 лет</div>
+                                    <input type="range" id="age-slider" class="age-slider" min="8" max="50" value="18">
+                                    <div class="flex justify-between text-white opacity-70 text-sm mt-2">
+                                        <span>8 лет</span>
+                                        <span>50+ лет</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Способ связи -->
+                            <div>
+                                <label class="block text-white font-semibold mb-4 text-lg">
+                                    Способ связи <span class="text-red-400">*</span>
+                                </label>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                    <div class="contact-option" data-contact="discord">
+                                        <i class="fab fa-discord text-2xl text-indigo-400"></i>
+                                        <span class="text-white font-medium">Discord</span>
+                                    </div>
+                                    <div class="contact-option" data-contact="telegram">
+                                        <i class="fab fa-telegram text-2xl text-blue-400"></i>
+                                        <span class="text-white font-medium">Telegram</span>
+                                    </div>
+                                    <div class="contact-option" data-contact="email">
+                                        <i class="fas fa-envelope text-2xl text-green-400"></i>
+                                        <span class="text-white font-medium">Email</span>
+                                    </div>
+                                </div>
+                                <div id="contact-input-container"></div>
+                            </div>
+
+                            <!-- Время на игру -->
+                            <div>
+                                <label class="block text-white font-semibold mb-4 text-lg">
+                                    Сколько часов в неделю ты сможешь уделять играм и развитию своего персонажа? <span class="text-red-400">*</span>
+                                </label>
+                                <div class="bg-blue-900 bg-opacity-30 p-4 rounded-lg mb-4">
+                                    <p class="text-white opacity-90 text-sm">
+                                        <strong>Объяснение:</strong> Сюда мы включаем совокупное время, которое ты готов тратить на:
+                                    </p>
+                                    <ul class="text-white opacity-80 text-sm mt-2 space-y-1">
+                                        <li>• Сами игровые сессии</li>
+                                        <li>• Чтение правил и изучение материалов</li>
+                                        <li>• Создание и развитие персонажа</li>
+                                        <li>• Общение с другими игроками вне сессий</li>
+                                    </ul>
+                                </div>
+                                <div class="slider-container">
+                                    <div class="age-display" id="time-display">10 часов/неделю</div>
+                                    <input type="range" id="time-slider" class="time-slider" min="0" max="40" value="10">
+                                    <div class="flex justify-between text-white opacity-70 text-sm mt-2">
+                                        <span>0 часов</span>
+                                        <span>40+ часов</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end mt-10">
+                            <button type="button" onclick="nextStep()" class="btn btn-primary text-lg px-8 py-3">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Игровой опыт -->
+                    <div class="step-content" id="step-2">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-white mb-4">
+                                <i class="fas fa-dice-d20 mr-3 text-green-300"></i>
+                                Игровой опыт
+                            </h2>
+                            <p class="text-white opacity-80 text-lg">Расскажите о своем опыте в настольных играх</p>
+                        </div>
+
+                        <div class="space-y-8">
+                            <!-- Текущие игры -->
+                            <div>
+                                <label class="block text-white font-semibold mb-4 text-lg">
+                                    Сколько игр ты посещаешь сейчас? <span class="text-red-400">*</span>
+                                </label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="choice-card" data-choice="current-games" data-value="none">
+                                        <i class="fas fa-bed text-3xl text-blue-300 mb-3"></i>
+                                        <p class="text-white font-medium">Не участвую</p>
+                                    </div>
+                                    <div class="choice-card" data-choice="current-games" data-value="one">
+                                        <i class="fas fa-dice-one text-3xl text-green-300 mb-3"></i>
+                                        <p class="text-white font-medium">Участвую в одной</p>
+                                    </div>
+                                    <div class="choice-card" data-choice="current-games" data-value="several">
+                                        <i class="fas fa-dice-six text-3xl text-orange-300 mb-3"></i>
+                                        <p class="text-white font-medium">Участвую в нескольких</p>
+                                    </div>
+                                    <div class="choice-card" data-choice="current-games" data-value="gm">
+                                        <i class="fas fa-crown text-3xl text-yellow-300 mb-3"></i>
+                                        <p class="text-white font-medium">Участвую как GM</p>
+                                    </div>
+                                    <div class="choice-card" data-choice="current-games" data-value="gm-player" style="grid-column: span 2;">
+                                        <i class="fas fa-chess-king text-3xl text-purple-300 mb-3"></i>
+                                        <p class="text-white font-medium">Участвую как GM + игрок</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Опыт игры -->
+                            <div>
+                                <label class="block text-white font-semibold mb-4 text-lg">
+                                    Какой у вас опыт в настольных РПГ?
+                                </label>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="choice-card" data-choice="experience" data-value="no-experience">
+                                        <i class="fas fa-baby text-3xl text-pink-300 mb-3"></i>
+                                        <p class="text-white font-medium">Не играл(а) в настольные РПГ</p>
+                                    </div>
+                                    <div class="choice-card" data-choice="experience" data-value="offline">
+                                        <i class="fas fa-users text-3xl text-blue-300 mb-3"></i>
+                                        <p class="text-white font-medium">Участвовал в оффлайн играх</p>
+                                    </div>
+                                    <div class="choice-card" data-choice="experience" data-value="online">
+                                        <i class="fas fa-desktop text-3xl text-green-300 mb-3"></i>
+                                        <p class="text-white font-medium">Участвовал в онлайн играх</p>
+                                    </div>
+                                    <div class="choice-card" data-choice="experience" data-value="both">
+                                        <i class="fas fa-globe text-3xl text-purple-300 mb-3"></i>
+                                        <p class="text-white font-medium">Опыт в обоих форматах</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between mt-10">
+                            <button type="button" onclick="prevStep()" class="btn btn-secondary text-lg px-8 py-3">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <button type="button" onclick="nextStep()" class="btn btn-primary text-lg px-8 py-3">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Понимание стиля игры -->
+                    <div class="step-content" id="step-3">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-white mb-4">
+                                <i class="fas fa-exclamation-triangle mr-3 text-yellow-300"></i>
+                                Стиль игры
+                            </h2>
+                            <p class="text-white opacity-80 text-lg">Важная информация о нашем подходе</p>
+                        </div>
+
+                        <div class="space-y-8">
+                            <!-- Антигероика -->
+                            <div class="warning-section">
+                                <h3 class="text-2xl font-bold text-white mb-4">
+                                    <i class="fas fa-mask text-orange-300 mr-2"></i>
+                                    Антигероика: мир, где ты не центр вселенной
+                                </h3>
+                                <p class="text-white opacity-90 mb-4">
+                                    Прежде чем ты отправишься в увлекательное путешествие по созданию своего персонажа, хотим уточнить: мы играем в стиле "антигероика". Это значит, что мир не будет вертеться вокруг твоей истории, а твой персонаж, скорее всего, не станет избранным героем, призванным спасти всех и вся.
+                                </p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    <div class="bg-black bg-opacity-20 p-4 rounded-lg">
+                                        <h4 class="font-bold text-white mb-2">
+                                            <i class="fas fa-shield-alt text-red-300 mr-2"></i>
+                                            Фокус на выживании
+                                        </h4>
+                                        <p class="text-white opacity-80 text-sm">Вместо славы и подвигов — борьба за выживание в суровом мире</p>
+                                    </div>
+                                    <div class="bg-black bg-opacity-20 p-4 rounded-lg">
+                                        <h4 class="font-bold text-white mb-2">
+                                            <i class="fas fa-balance-scale text-gray-300 mr-2"></i>
+                                            Моральная неоднозначность
+                                        </h4>
+                                        <p class="text-white opacity-80 text-sm">Мир не делится на черное и белое, добро и зло</p>
+                                    </div>
+                                    <div class="bg-black bg-opacity-20 p-4 rounded-lg">
+                                        <h4 class="font-bold text-white mb-2">
+                                            <i class="fas fa-heart-broken text-purple-300 mr-2"></i>
+                                            Трагичность и безысходность
+                                        </h4>
+                                        <p class="text-white opacity-80 text-sm">Не всегда есть счастливый конец</p>
+                                    </div>
+                                    <div class="bg-black bg-opacity-20 p-4 rounded-lg">
+                                        <h4 class="font-bold text-white mb-2">
+                                            <i class="fas fa-dice text-blue-300 mr-2"></i>
+                                            Мир не подстраивается
+                                        </h4>
+                                        <p class="text-white opacity-80 text-sm">Гибкость и адаптивность — ключ к выживанию</p>
+                                    </div>
+                                </div>
+                                <div class="choice-card selected" data-choice="anti-heroic" data-value="understood">
+                                    <i class="fas fa-check-circle text-3xl text-green-300 mb-3"></i>
+                                    <p class="text-white font-medium">Да, я это понимаю</p>
+                                </div>
+                            </div>
+
+                            <!-- Предупреждение о содержании -->
+                            <div class="danger-section">
+                                <h3 class="text-2xl font-bold text-white mb-4">
+                                    <i class="fas fa-exclamation-circle text-red-300 mr-2"></i>
+                                    Предупреждение о содержании игры
+                                </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    <div class="bg-black bg-opacity-30 p-4 rounded-lg">
+                                        <h4 class="font-bold text-white mb-2">
+                                            <i class="fas fa-skull text-red-300 mr-2"></i>
+                                            Насилие и жестокость
+                                        </h4>
+                                        <p class="text-white opacity-80 text-sm">Сцены насилия, сражения, жестокие убийства</p>
+                                    </div>
+                                    <div class="bg-black bg-opacity-30 p-4 rounded-lg">
+                                        <h4 class="font-bold text-white mb-2">
+                                            <i class="fas fa-fire text-orange-300 mr-2"></i>
+                                            Пытки
+                                        </h4>
+                                        <p class="text-white opacity-80 text-sm">Персонажи могут столкнуться с пытками</p>
+                                    </div>
+                                    <div class="bg-black bg-opacity-30 p-4 rounded-lg">
+                                        <h4 class="font-bold text-white mb-2">
+                                            <i class="fas fa-tombstone text-gray-300 mr-2"></i>
+                                            Смерть и утрата
+                                        </h4>
+                                        <p class="text-white opacity-80 text-sm">Персонажи могут погибнуть или потерять близких</p>
+                                    </div>
+                                    <div class="bg-black bg-opacity-30 p-4 rounded-lg">
+                                        <h4 class="font-bold text-white mb-2">
+                                            <i class="fas fa-brain text-purple-300 mr-2"></i>
+                                            Психологические травмы
+                                        </h4>
+                                        <p class="text-white opacity-80 text-sm">Ситуации психологического давления</p>
+                                    </div>
+                                    <div class="bg-black bg-opacity-30 p-4 rounded-lg">
+                                        <h4 class="font-bold text-white mb-2">
+                                            <i class="fas fa-user-slash text-yellow-300 mr-2"></i>
+                                            Дискриминация
+                                        </h4>
+                                        <p class="text-white opacity-80 text-sm">Различные формы предрассудков в мире игры</p>
+                                    </div>
+                                    <div class="bg-black bg-opacity-30 p-4 rounded-lg">
+                                        <h4 class="font-bold text-white mb-2">
+                                            <i class="fas fa-fist-raised text-red-300 mr-2"></i>
+                                            Расизм и ксенофобия
+                                        </h4>
+                                        <p class="text-white opacity-80 text-sm">По отношению к вымышленным персонажам</p>
+                                    </div>
+                                </div>
+                                <div class="choice-card selected" data-choice="content-warning" data-value="understood">
+                                    <i class="fas fa-check-circle text-3xl text-green-300 mb-3"></i>
+                                    <p class="text-white font-medium">Да, я это понимаю</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between mt-10">
+                            <button type="button" onclick="prevStep()" class="btn btn-secondary text-lg px-8 py-3">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <button type="button" onclick="nextStep()" class="btn btn-primary text-lg px-8 py-3">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Вопросы билдинга -->
+                    <div class="step-content" id="step-4">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-white mb-4">
+                                <i class="fas fa-hammer mr-3 text-orange-300"></i>
+                                Создание персонажа
+                            </h2>
+                            <p class="text-white opacity-80 text-lg">Билдинг и правила</p>
+                        </div>
+
+                        <div class="space-y-8">
+                            <!-- Вопрос билдинга -->
+                            <div class="warning-section">
+                                <h3 class="text-2xl font-bold text-white mb-4">
+                                    <i class="fas fa-cogs text-yellow-300 mr-2"></i>
+                                    Вопрос билдинга персонажа
+                                </h3>
+                                <p class="text-white opacity-90 mb-4">
+                                    В этой версии анкеты мы решили провести эксперимент и отказаться от обязательного предоставления готового билда персонажа, созданного в Pathbuilder.
+                                </p>
+                                <p class="text-white opacity-90 mb-4">
+                                    Однако, стоит учесть, что бои составляют значительную часть (около 50%) игрового процесса, и они рассчитаны на персонажей с хорошо продуманными и сбалансированными билдами.
+                                </p>
+                                <p class="text-white opacity-90 mb-6">
+                                    Мы всегда готовы помочь с созданием персонажа и подбором оптимального билда, если потребуется. Однако, если процесс билдинга вызывает у вас сильную антипатию или вы не готовы уделять этому время, то, возможно, наша игра не подойдет вам.
+                                </p>
+                                
+                                <div class="space-y-3">
+                                    <div class="choice-card" data-choice="building" data-value="understand">
+                                        <i class="fas fa-thumbs-up text-3xl text-green-300 mb-3"></i>
+                                        <p class="text-white font-medium">Да, я это понимаю</p>
+                                    </div>
+                                    <div class="choice-card" data-choice="building" data-value="provide-build">
+                                        <i class="fas fa-tools text-3xl text-blue-300 mb-3"></i>
+                                        <p class="text-white font-medium">Да, я понимаю и все равно хочу предоставить билд своего персонажа в Pathbuilder</p>
+                                    </div>
+                                    <div class="choice-card" data-choice="building" data-value="other">
+                                        <i class="fas fa-question text-3xl text-purple-300 mb-3"></i>
+                                        <p class="text-white font-medium">Другое</p>
+                                    </div>
+                                </div>
+
+                                <div id="build-input-container" class="mt-4" style="display: none;">
+                                    <textarea class="textarea-custom" placeholder="Опишите ваш билд или вставьте ссылку на Pathbuilder..."></textarea>
+                                </div>
+                            </div>
+
+                            <!-- Правила билдинга -->
+                            <div class="bg-blue-900 bg-opacity-30 p-6 rounded-lg">
+                                <h3 class="text-2xl font-bold text-white mb-4">
+                                    <i class="fas fa-list-ul text-blue-300 mr-2"></i>
+                                    Некоторые правила для дальнейшего билдинга
+                                </h3>
+                                <div class="space-y-3 text-white opacity-90">
+                                    <p><i class="fas fa-check text-green-300 mr-2"></i>Мы используем ТОЛЬКО официальные дополнения Pathfinder 2e</p>
+                                    <p><i class="fas fa-eye text-yellow-300 mr-2"></i>Мир реагирует на все, что кажется ему странным. Выбирая странную, необычную расу - будь к этому готов</p>
+                                    <p><i class="fas fa-ban text-red-300 mr-2"></i>Кросспол - запрещен</p>
+                                    <p><i class="fas fa-users text-purple-300 mr-2"></i>Нам не импонирует игра с одинаковыми классами, именно поэтому ты можешь взять любой класс кроме Exemplar, Thaumaturge, Warrior, Wizard, Sorcerer</p>
+                                    <p><i class="fas fa-level-up-alt text-orange-300 mr-2"></i>Персонажи начинают игру с 9-го уровня</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between mt-10">
+                            <button type="button" onclick="prevStep()" class="btn btn-secondary text-lg px-8 py-3">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <button type="button" onclick="nextStep()" class="btn btn-primary text-lg px-8 py-3">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: История персонажа -->
+                    <div class="step-content" id="step-5">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-white mb-4">
+                                <i class="fas fa-feather-alt mr-3 text-purple-300"></i>
+                                История персонажа
+                            </h2>
+                            <p class="text-white opacity-80 text-lg">Самая важная часть анкеты</p>
+                        </div>
+
+                        <div class="space-y-8">
+                            <!-- Информационная секция -->
+                            <div class="story-section">
+                                <div class="text-center mb-6">
+                                    <i class="fas fa-exclamation-triangle text-4xl text-yellow-300 mb-4"></i>
+                                    <h3 class="text-2xl font-bold text-white mb-4">Важная информация</h3>
+                                    <p class="text-red-300 font-semibold text-lg mb-4">
+                                        Анкеты без предыстории персонажа рассматриваться не будут.
+                                    </p>
+                                    <p class="text-white opacity-90">
+                                        Это конкурсный формат, где оцениваем способность игроков создавать интересные предыстории персонажей, опираясь на предоставленную информацию.
+                                    </p>
+                                </div>
+
+                                <!-- Карта и примеры -->
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                                    <div>
+                                        <h4 class="text-xl font-bold text-white mb-3">
+                                            <i class="fas fa-map text-green-300 mr-2"></i>
+                                            Карта мира
+                                        </h4>
+                                        <div class="image-placeholder" style="height: 250px;">
+                                            <div>
+                                                <i class="fas fa-map text-3xl mb-2"></i><br>
+                                                Карта Иррисена и Людовн<br>
+                                                <small>Размер: 400x250px</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xl font-bold text-white mb-3">
+                                            <i class="fas fa-scroll text-blue-300 mr-2"></i>
+                                            Вводная информация
+                                        </h4>
+                                        <div class="example-card">
+                                            <p class="text-white opacity-90 text-sm mb-3">
+                                                <strong>Ссылка:</strong> 
+                                                <a href="#" class="text-blue-300 hover:text-blue-400">docs.google.com/document/d/1uPl-EKQV7pKyLypPRyoAH7iq4BSPe93PBSeKVuHC5zw</a>
+                                            </p>
+                                            <p class="text-white opacity-90 text-sm">
+                                                Население Людовн: <strong>670 жителей</strong>
+                                            </p>
+                                            <div class="mt-3">
+                                                <p class="text-white font-semibold text-sm mb-2">Расовая демография Иррисена:</p>
+                                                <div class="text-white opacity-80 text-xs space-y-1">
+                                                    <p>• Люди (Улфен и Ядвига): 60%</p>
+                                                    <p>• Зимние ведьмы: 10%</p>
+                                                    <p>• Ледяные тролли и гиганты: 10%</p>
+                                                    <p>• Зимние волки: 8%</p>
+                                                    <p>• Различные фейри: 7%</p>
+                                                    <p>• Другие расы: 5%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Примеры персонажей -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div>
+                                        <h4 class="text-lg font-bold text-white mb-3">
+                                            <i class="fas fa-thumbs-up text-green-300 mr-2"></i>
+                                            Хороший пример
+                                        </h4>
+                                        <div class="image-placeholder" style="height: 150px;">
+                                            <div>
+                                                <i class="fas fa-user-check text-2xl mb-1"></i><br>
+                                                Пример хорошей истории<br>
+                                                <small>300x150px</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-bold text-white mb-3">
+                                            <i class="fas fa-thumbs-down text-red-300 mr-2"></i>
+                                            Плохой пример
+                                        </h4>
+                                        <div class="image-placeholder" style="height: 150px;">
+                                            <div>
+                                                <i class="fas fa-user-times text-2xl mb-1"></i><br>
+                                                Пример плохой истории<br>
+                                                <small>300x150px</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-bold text-white mb-3">
+                                            <i class="fas fa-users text-blue-300 mr-2"></i>
+                                            Наши персонажи
+                                        </h4>
+                                        <div class="image-placeholder" style="height: 150px;">
+                                            <div>
+                                                <i class="fas fa-users text-2xl mb-1"></i><br>
+                                                Галерея персонажей<br>
+                                                <small>300x150px</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Примеры персонажей -->
+                                <div class="example-card">
+                                    <h4 class="text-lg font-bold text-white mb-3">
+                                        <i class="fas fa-star text-yellow-300 mr-2"></i>
+                                        Примеры наших предыдущих персонажей
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="bg-black bg-opacity-20 p-3 rounded">
+                                            <p class="text-white font-semibold">Валент Черносердечный</p>
+                                            <p class="text-white opacity-70 text-sm">Пример интересного персонажа</p>
+                                        </div>
+                                        <div class="bg-black bg-opacity-20 p-3 rounded">
+                                            <p class="text-white font-semibold">Жига</p>
+                                            <p class="text-white opacity-70 text-sm">Еще один яркий персонаж</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Поле для истории -->
+                            <div>
+                                <label class="block text-white font-semibold mb-4 text-lg">
+                                    Напишите историю своего персонажа <span class="text-red-400">*</span>
+                                </label>
+                                <p class="text-white opacity-80 mb-4">
+                                    Ваши персонажи – это жители Людовн или гости, прибывшие в городок по разным причинам. 
+                                    Придерживайтесь славянского сеттинга для региона Иррисен.
+                                </p>
+                                <textarea id="character-story" name="character-story" required
+                                          class="textarea-custom"
+                                          style="min-height: 300px;"
+                                          placeholder="Расскажите подробную историю вашего персонажа...
+
+Подумайте о:
+• Происхождении и детстве персонажа
+• Ключевых событиях, сформировавших характер
+• Мотивации и целях
+• Связях с другими персонажами
+• Секретах и тайнах
+• Отношении к фракциям города
+
+Помните: вас ждет интригующий микс из исследований, социальных взаимодействий, разгадки тайн и захватывающих боев!"></textarea>
+                                <div class="flex justify-between items-center mt-2">
+                                    <span class="text-white opacity-70 text-sm" id="char-count">0 символов</span>
+                                    <span class="text-white opacity-70 text-sm">Рекомендуется минимум 500 символов</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between mt-10">
+                            <button type="button" onclick="prevStep()" class="btn btn-secondary text-lg px-8 py-3">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <button type="button" onclick="nextStep()" class="btn btn-primary text-lg px-8 py-3">
+                                Далее <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: Завершение -->
+                    <div class="step-content" id="step-6">
+                        <div class="text-center mb-8">
+                            <h2 class="text-3xl font-bold text-white mb-4">
+                                <i class="fas fa-flag-checkered mr-3 text-green-300"></i>
+                                Финальные детали
+                            </h2>
+                            <p class="text-white opacity-80 text-lg">Последний шаг перед отправкой</p>
+                        </div>
+
+                        <div class="space-y-8">
+                            <!-- Дополнительная информация -->
+                            <div>
+                                <label class="block text-white font-semibold mb-4 text-lg">
+                                    Дополнительная информация
+                                </label>
+                                <p class="text-white opacity-80 mb-4">
+                                    Есть ли что-то еще, что вы хотели бы рассказать о себе или своем персонаже?
+                                </p>
+                                <textarea id="additional-info" name="additional-info"
+                                          class="textarea-custom"
+                                          style="min-height: 150px;"
+                                          placeholder="Любая дополнительная информация, которую вы считаете важной..."></textarea>
+                            </div>
+
+                            <!-- Статистика кампании -->
+                            <div class="bg-gradient-to-r from-purple-900 to-blue-900 bg-opacity-50 p-6 rounded-lg">
+                                <h3 class="text-2xl font-bold text-white mb-6 text-center">
+                                    <i class="fas fa-chart-bar mr-2 text-yellow-300"></i>
+                                    Статистика кампании
+                                </h3>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                    <div class="stats-card">
+                                        <div class="text-3xl font-bold text-blue-300">578</div>
+                                        <div class="text-white opacity-80 text-sm">Дней истории</div>
+                                    </div>
+                                    <div class="stats-card">
+                                        <div class="text-3xl font-bold text-green-300">95%</div>
+                                        <div class="text-white opacity-80 text-sm">Выполнение фракций</div>
+                                    </div>
+                                    <div class="stats-card">
+                                        <div class="text-3xl font-bold text-red-300">15%</div>
+                                        <div class="text-white opacity-80 text-sm">Смертность</div>
+                                    </div>
+                                    <div class="stats-card">
+                                        <div class="text-3xl font-bold text-orange-300">7%</div>
+                                        <div class="text-white opacity-80 text-sm">Другие расы</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Согласие -->
+                            <div class="bg-gray-900 bg-opacity-50 p-6 rounded-lg">
+                                <div class="flex items-start space-x-4">
+                                    <input type="checkbox" id="agreement" name="agreement" required 
+                                           class="mt-2 w-5 h-5 text-purple-600 bg-transparent border-2 border-white rounded focus:ring-purple-500">
+                                    <label for="agreement" class="text-white opacity-90">
+                                        Я подтверждаю, что ознакомился с правилами кампании, понимаю требования к игрокам и готов их соблюдать. 
+                                        Я также понимаю, что GM может отклонить мою заявку без объяснения причин.
+                                        <span class="text-red-400 ml-1">*</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between mt-10">
+                            <button type="button" onclick="prevStep()" class="btn btn-secondary text-lg px-8 py-3">
+                                <i class="fas fa-arrow-left"></i> Назад
+                            </button>
+                            <button type="submit" class="btn btn-success text-lg px-12 py-3 pulse">
+                                <i class="fas fa-paper-plane"></i> Отправить анкету
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- Success Message (Hidden) -->
+            <div id="success-message" class="glass-effect rounded-2xl p-8 text-center" style="display: none;">
+                <div class="mb-8">
+                    <i class="fas fa-check-circle text-8xl text-green-300 mb-6"></i>
+                    <h2 class="text-4xl font-bold text-white mb-4">Анкета отправлена!</h2>
+                    <p class="text-2xl text-white opacity-90">Спасибо за ваш интерес к нашей кампании</p>
+                </div>
+                
+                <div class="bg-green-900 bg-opacity-30 p-6 rounded-lg border-2 border-green-400 mb-8">
+                    <h3 class="text-2xl font-bold text-white mb-4">
+                        <i class="fas fa-info-circle text-green-300 mr-2"></i>
+                        Что дальше?
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-white opacity-90">
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-clock text-yellow-300"></i>
+                            <span>GM рассмотрит вашу анкету в течение 3-5 дней</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-envelope text-blue-300"></i>
+                            <span>Вы получите ответ на указанный контакт</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <i class="fab fa-discord text-purple-300"></i>
+                            <span>При одобрении вас пригласят в Discord сервер</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <i class="fas fa-comments text-green-300"></i>
+                            <span>Далее состоится интервью с GM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <a href="#" class="btn btn-primary text-lg px-8 py-3">
+                        <i class="fas fa-home"></i> Вернуться на главную
+                    </a>
+                    <p class="text-white opacity-70">
+                        Или присоединяйтесь к нашему Discord для общения с сообществом
+                    </p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+<footer class="hero-section text-white py-8 mt-12">
+  <div class="container mx-auto px-4">
+    <!-- Navigation -->
+    <div class="grid md:grid-cols-4 gap-8 mb-8">
+      <div>
+        <div class="flex items-center mb-4">
+          <i class="fas fa-book text-2xl mr-3"></i>
+          <h3 class="text-lg font-bold">Правила</h3>
+        </div>
+        <p class="text-sm opacity-80 mb-4">Полный свод правил кампании, эволюция персонажей и системы развития</p>
+        <ul class="text-sm space-y-1 opacity-80">
+          <li>• Эволюция персонажей</li>
+          <li>• Сюжетные ивенты</li>
+          <li>• Санкции</li>
+          <li>• Ограничения влияния</li>
+        </ul>
+        <button class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg mt-4 text-sm transition-all">Изучить правила</button>
+      </div>
+
+      <div>
+        <div class="flex items-center mb-4">
+          <i class="fas fa-clipboard-list text-2xl mr-3"></i>
+          <h3 class="text-lg font-bold">Анкеты</h3>
+        </div>
+        <p class="text-sm opacity-80 mb-4">Создание персонажей, заявки на участие и регистрационные формы</p>
+        <ul class="text-sm space-y-1 opacity-80">
+          <li>• Анкета персонажа</li>
+          <li>• Заявка на участие</li>
+          <li>• Обратная связь</li>
+          <li>• Предложения</li>
+        </ul>
+        <button class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg mt-4 text-sm transition-all">Заполнить анкету</button>
+      </div>
+
+      <div>
+        <div class="flex items-center mb-4">
+          <i class="fas fa-newspaper text-2xl mr-3"></i>
+          <h3 class="text-lg font-bold">Новости</h3>
+        </div>
+        <p class="text-sm opacity-80 mb-4">Актуальные новости кампании, изменения правил и анонсы событий</p>
+        <ul class="text-sm space-y-1 opacity-80">
+          <li>• Обновление правил</li>
+          <li>• Новые ивенты</li>
+          <li>• Изменения расписания</li>
+          <li>• Достижения игроков</li>
+        </ul>
+        <button class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg mt-4 text-sm transition-all">Читать новости</button>
+      </div>
+
+      <div>
+        <div class="flex items-center mb-4">
+          <i class="fas fa-comments text-2xl mr-3"></i>
+          <h3 class="text-lg font-bold">Связь</h3>
+        </div>
+        <p class="text-sm opacity-80 mb-4">Контакты организаторов, техническая поддержка и сообщество игроков</p>
+        <ul class="text-sm space-y-1 opacity-80">
+          <li>• Discord сервер</li>
+          <li>• Telegram канал</li>
+          <li>• Техподдержка</li>
+          <li>• GM контакт</li>
+        </ul>
+        <button class="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-lg mt-4 text-sm transition-all">Связаться с нами</button>
+      </div>
+    </div>
+
+    <div class="border-t border-white border-opacity-20 pt-6 text-center">
+      <p class="text-sm opacity-80 mb-2">© 2025 Epic Pathfinder | Создано для кампании Pathfinder 2e</p>
+      <p class="text-xs opacity-60">Основано на официальных правилах Paizo | Адаптировано для кампании</p>
+    </div>
+  </div>
+</footer>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 6;
+        let formData = {};
+
+        // Floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.width = (Math.random() * 4 + 2) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            updateStepIndicators();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Age slider
+            const ageSlider = document.getElementById('age-slider');
+            const ageDisplay = document.getElementById('age-display');
+            
+            ageSlider.addEventListener('input', function() {
+                const value = this.value;
+                ageDisplay.textContent = value + (value == 50 ? '+ лет' : ' лет');
+                
+                // Update slider position
+                const percent = (value - 8) / (50 - 8) * 100;
+                ageDisplay.style.left = percent + '%';
+            });
+
+            // Time slider
+            const timeSlider = document.getElementById('time-slider');
+            const timeDisplay = document.getElementById('time-display');
+            
+            timeSlider.addEventListener('input', function() {
+                const value = this.value;
+                timeDisplay.textContent = value + (value == 40 ? '+ часов/неделю' : ' часов/неделю');
+                
+                const percent = (value / 40) * 100;
+                timeDisplay.style.left = percent + '%';
+            });
+
+            // Contact method selection
+            document.querySelectorAll('.contact-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('.contact-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    const contactType = this.dataset.contact;
+                    showContactInput(contactType);
+                });
+            });
+
+            // Choice cards
+            document.querySelectorAll('.choice-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const choiceType = this.dataset.choice;
+                    const value = this.dataset.value;
+                    
+                    // Remove selection from same group
+                    document.querySelectorAll(`[data-choice="${choiceType}"]`).forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Special handling for building choice
+                    if (choiceType === 'building') {
+                        const buildContainer = document.getElementById('build-input-container');
+                        if (value === 'provide-build' || value === 'other') {
+                            buildContainer.style.display = 'block';
+                        } else {
+                            buildContainer.style.display = 'none';
+                        }
+                    }
+                });
+            });
+
+            // Character count
+            const storyTextarea = document.getElementById('character-story');
+            const charCount = document.getElementById('char-count');
+            
+            storyTextarea.addEventListener('input', function() {
+                const count = this.value.length;
+                charCount.textContent = count + ' символов';
+                
+                if (count < 500) {
+                    charCount.className = 'text-red-400 text-sm';
+                } else if (count < 1000) {
+                    charCount.className = 'text-yellow-400 text-sm';
+                } else {
+                    charCount.className = 'text-green-400 text-sm';
+                }
+            });
+
+            // Form submission
+            document.getElementById('application-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (validateCurrentStep()) {
+                    showSuccessMessage();
+                }
+            });
+        }
+
+        function showContactInput(type) {
+            const container = document.getElementById('contact-input-container');
+            let placeholder = '';
+            let inputType = 'text';
+            
+            switch(type) {
+                case 'discord':
+                    placeholder = 'Ваш Discord (например: username#1234)';
+                    break;
+                case 'telegram':
+                    placeholder = 'Ваш Telegram (например: @username)';
+                    break;
+                case 'email':
+                    placeholder = 'Ваш Email (например: user@example.com)';
+                    inputType = 'email';
+                    break;
+            }
+            
+            container.innerHTML = `
+                <input type="${inputType}" class="contact-input" placeholder="${placeholder}" required>
+            `;
+        }
+
+        function updateStepIndicators() {
+            for (let i = 1; i <= totalSteps; i++) {
+                const indicator = document.getElementById(`step-indicator-${i}`);
+                const progressLine = document.getElementById(`progress-${i}`);
+                
+                if (i < currentStep) {
+                    indicator.className = 'step-indicator completed';
+                    if (progressLine) progressLine.style.setProperty('--tw-bg-opacity', '1');
+                } else if (i === currentStep) {
+                    indicator.className = 'step-indicator active';
+                } else {
+                    indicator.className = 'step-indicator inactive';
+                }
+                
+                if (progressLine && i < currentStep) {
+                    progressLine.querySelector('::after') ? progressLine.querySelector('::after').style.width = '100%' : null;
+                }
+            }
+            
+            // Update progress lines
+            document.querySelectorAll('.progress-line').forEach((line, index) => {
+                if (index + 1 < currentStep) {
+                    line.style.setProperty('--progress-width', '100%');
+                } else {
+                    line.style.setProperty('--progress-width', '0%');
+                }
+            });
+            
+            const titles = [
+                'Шаг 1 из 6: Основная информация',
+                'Шаг 2 из 6: Игровой опыт',
+                'Шаг 3 из 6: Стиль игры',
+                'Шаг 4 из 6: Создание персонажа',
+                'Шаг 5 из 6: История персонажа',
+                'Шаг 6 из 6: Финальные детали'
+            ];
+            
+            document.getElementById('step-title').textContent = titles[currentStep - 1];
+        }
+
+        function nextStep() {
+            if (validateCurrentStep() && currentStep < totalSteps) {
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                currentStep++;
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                updateStepIndicators();
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                document.getElementById(`step-${currentStep}`).classList.remove('active');
+                currentStep--;
+                document.getElementById(`step-${currentStep}`).classList.add('active');
+                updateStepIndicators();
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function validateCurrentStep() {
+            const currentStepElement = document.getElementById(`step-${currentStep}`);
+            
+            // Step 1 validation
+            if (currentStep === 1) {
+                const name = document.getElementById('name').value.trim();
+                const contactSelected = document.querySelector('.contact-option.selected');
+                const contactInput = document.querySelector('#contact-input-container input');
+                
+                if (!name) {
+                    alert('Пожалуйста, введите ваше имя');
+                    return false;
+                }
+                
+                if (!contactSelected) {
+                    alert('Пожалуйста, выберите способ связи');
+                    return false;
+                }
+                
+                if (contactInput && !contactInput.value.trim()) {
+                    alert('Пожалуйста, введите контактную информацию');
+                    return false;
+                }
+            }
+            
+            // Step 2 validation
+            if (currentStep === 2) {
+                const currentGamesSelected = document.querySelector('[data-choice="current-games"].selected');
+                
+                if (!currentGamesSelected) {
+                    alert('Пожалуйста, выберите, сколько игр вы посещаете сейчас');
+                    return false;
+                }
+            }
+            
+            // Step 5 validation (character story)
+            if (currentStep === 5) {
+                const story = document.getElementById('character-story').value.trim();
+                if (story.length < 100) {
+                    alert('История персонажа должна содержать минимум 100 символов');
+                    return false;
+                }
+            }
+            
+            // Step 6 validation (agreement)
+            if (currentStep === 6) {
+                const agreement = document.getElementById('agreement').checked;
+                if (!agreement) {
+                    alert('Пожалуйста, подтвердите согласие с правилами');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        function showSuccessMessage() {
+            document.querySelector('.glass-effect.rounded-2xl.p-8.card-hover').style.display = 'none';
+            document.getElementById('success-message').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Add smooth transitions for progress lines
+        const style = document.createElement('style');
+        style.textContent = `
+            .progress-line::after {
+                width: var(--progress-width, 0%);
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
